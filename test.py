@@ -1,108 +1,46 @@
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+from PySide6.QtWidgets import QApplication, QFileDialog
+import csv
 
-from qt_core import *
+# create a QApplication instance
+app = QApplication()
 
-# STYLE
-# ///////////////////////////////////////////////////////////////
-style = '''
-QPushButton {{
-	border: none;
-    padding-left: 10px;
-    padding-right: 5px;
-    color: {_color};
-	border-radius: {_radius};	
-	background-color: {_bg_color};
-}}
-QPushButton:hover {{
-	background-color: {_bg_color_hover};
-}}
-QPushButton:pressed {{	
-	background-color: {_bg_color_pressed};
-}}
-'''
+# open a file dialog to select a CSV file
+file_dialog = QFileDialog()
+file_dialog.setNameFilter("CSV files (*.csv)")
+if file_dialog.exec_() == QFileDialog.Accepted:
+    selected_file = file_dialog.selectedFiles()[0]
+else:
+    # user cancelled the file dialog
+    selected_file = None
 
-# PY PUSH BUTTON
-# ///////////////////////////////////////////////////////////////
-class CustomButton(QPushButton):
-    def __init__(
-        self, 
-        text,
-        radius,
-        color,
-        bg_color,
-        bg_color_hover,
-        bg_color_pressed,
-        parent = None,
-    ):
-        super().__init__(parent)
+# parse the CSV file and create the dictionaries
+if selected_file is not None:
+    dictionaries = []
+    current_dict = None
 
-        # SET PARAMETRES
-        self.setText(text)
-        if parent != None:
-            self.setParent(parent)
-        self.setCursor(Qt.PointingHandCursor)
+    with open(selected_file, 'r') as csvfile:
+        reader = csv.reader(csvfile, delimiter=' ')
 
-        # SET STYLESHEET
-        custom_style = style.format(
-            _color = color,
-            _radius = radius,
-            _bg_color = bg_color,
-            _bg_color_hover = bg_color_hover,
-            _bg_color_pressed = bg_color_pressed
-        )
-        self.setStyleSheet(custom_style)
+        for row in reader:
+            if row[0] == '-':  # found end of dictionary
+                current_dict = None
+            elif row[0] == '/':  # found separator line
+                current_dict = {}
+                dictionaries.append(current_dict)
+            elif current_dict is not None:  # data for current dictionary
+                key = row[0]
+                values = [[(row[i]), (row[i+1])] for i in range(1, len(row), 2)]
+                current_dict[key] = values
+            else:
+                # first dictionary not preceded by separator line
+                current_dict = {}
+                dictionaries.append(current_dict)
+                key = row[0]
+                values = [[(row[i]), (row[i+1])] for i in range(1, len(row), 2)]
+                current_dict[key] = values
 
+    # do something with the dictionaries
+    print(dictionaries)
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Button Example")
-        self.setGeometry(100, 100, 400, 300)
-
-        # Create the custom button
-        self.button = CustomButton(
-            text = "Button Without Icon",
-            radius  =8,
-            color =  "#2c313c",
-            bg_color =  "#2c313c",
-            bg_color_hover ="#2c313c",
-            bg_color_pressed = "#2c313c",
-            parent = self
-        )
-        self.button.setText("Click Me")
-
-        # Set the button position
-        self.update_button_position()
-
-    def update_button_position(self):
-        # Get the current size of the window
-        window_size = self.size()
-
-        # Get the size of the button
-        button_size = self.button.sizeHint()
-
-        # Calculate the position of the button
-        button_x = window_size.width() - button_size.width() - 10
-        button_y = window_size.height() - button_size.height() - 10
-
-        print(button_x)
-        print(button_y)
-        print(button_size.width())
-        print(button_size.height())
-
-        # Set the button position
-        self.button.setGeometry(button_x, button_y, button_size.width(), button_size.height())
-
-    def resizeEvent(self, event):
-        # Call the base class resizeEvent handler
-        super().resizeEvent(event)
-
-        # Update the position of the button
-        self.update_button_position()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+# exit the application
+app.exit()

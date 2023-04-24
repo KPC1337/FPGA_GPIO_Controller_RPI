@@ -21,7 +21,7 @@ import sys
 import os
 
 from configparser import ConfigParser
-
+import csv
 # IMPORT QT CORE
 # ///////////////////////////////////////////////////////////////
 from qt_core import *
@@ -76,12 +76,13 @@ class MainWindow(QMainWindow):
 
         self.currentProfile = False
         self.profileTypes = 'Profiles (*.ini)'
+        self.customProfileType = 'Custom Profile (*.csv)'
         
-        self.add_macro_widget.addMacroClicked.connect(lambda: self.handleAddMacro(self.add_macro_widget, self.test_widget.button_states))
-        self.add_macro_widget.sendButtonClicked.connect(self.handleSendMacro)
-        self.add_macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
-        self.macros.append(self.add_macro_widget)
+        # self.add_macro_widget.addMacroClicked.connect(lambda: self.handleAddMacro(self.add_macro_widget, self.test_widget.button_states))
+        # self.add_macro_widget.sendButtonClicked.connect(self.handleSendMacro)
+        # self.add_macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+        # self.add_macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+        # self.macros.append(self.add_macro_widget)
 
         self.add_macro_widget_2.dropDownClicked.connect(self.handleMacroDropClick)
         self.add_macro_widget_3.dropDownClicked.connect(self.handleMacroDropClick)
@@ -92,6 +93,47 @@ class MainWindow(QMainWindow):
         self.add_macro_widget_8.dropDownClicked.connect(self.handleMacroDropClick)
         self.add_macro_widget_9.dropDownClicked.connect(self.handleMacroDropClick)
         self.add_macro_widget_10.dropDownClicked.connect(self.handleMacroDropClick)
+
+        self.add_macro_widget_2.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_3.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_4.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_5.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_6.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_7.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_8.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_9.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget_10.saveMacroClicked.connect(self.handleSaveMacro)
+
+        self.add_macro_widget_2.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_3.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_4.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_5.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_6.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_7.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_8.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_9.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget_10.addMacroClicked.connect(self.handleAddMacro)
+
+        self.add_macro_widget_2.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_3.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_4.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_5.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_6.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_7.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_8.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_9.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget_10.deleteMacroClicked.connect(self.handleDeleteMacro)
+
+        self.macros.append(self.add_macro_widget_10)
+        self.macros.append(self.add_macro_widget_2)
+        self.macros.append(self.add_macro_widget_3)
+        self.macros.append(self.add_macro_widget_4)
+        self.macros.append(self.add_macro_widget_5)
+        self.macros.append(self.add_macro_widget_6)
+        self.macros.append(self.add_macro_widget_7)
+        self.macros.append(self.add_macro_widget_8)
+        self.macros.append(self.add_macro_widget_9)
+
 
         self.update_coms()
 
@@ -126,41 +168,42 @@ class MainWindow(QMainWindow):
             # item[0] is the index and item[1] is the state
             self.test_widget.setButtonState(index = item[0], state = item[1])
 
-    def handleAddMacro(self, widget, states):
-            widget.set_button_states(states)
-            macro_widget = PyGpioMacro(
+    def handleAddMacro(self):
+            macro_widget = PyGpioMacro2(
                 parent = self,
                 app_parent = self.ui.central_widget,
-                width = 1000,
-                colour = self.themes["app_color"]["dark_three"]
+                name = "",
+                dropdownval={},
+                width = 600,
+                colour = self.themes["app_color"]["dark_three"],
+                last_item=True
             )
             self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
-            macro_widget.addMacroClicked.connect(lambda: self.handleAddMacro(macro_widget, self.test_widget.button_states))
-            macro_widget.sendButtonClicked.connect(self.handleSendMacro)
+            macro_widget.addMacroClicked.connect(self.handleAddMacro)
+            macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
             macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
             macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
             self.macros.append(macro_widget)
-            print(self.macros)
 
     def handleSendMacro(self, states):
             self.test_widget.setButtonStates(states)
             self.test_widget.getSerialData(self.ui.statusBar)
             # self.serial_send()
 
-    def handleSaveMacro(self, widget):
-            widget.set_button_states(self.test_widget.button_states)
+    def handleSaveMacro(self, widget, pinList):
+            print("wow")
+            stateList = []
+            for pin in pinList:
+                stateList.append(self.test_widget.button_states[pin])
+            print(pinList)
+            print(stateList)
+            widget.set_button_states(stateList)
 
     def handleDeleteMacro(self, widget):
-        if(widget.top_level and (self.macros.length() > 1)):
-            widget.set_top_level(False)
-            widget.button_add_macro.deleteLater()
-            self.macros.remove(widget)
-            self.ui.load_pages.verticalLayout_2.removeWidget(widget)
-            widget.deleteLater()
-        elif(widget.top_level == False):
-            self.macros.remove(widget)
-            self.ui.load_pages.verticalLayout_2.removeWidget(widget)
-            widget.deleteLater()
+        print("ddelete macro clicked")
+        self.macros.remove(widget)
+        self.ui.load_pages.verticalLayout_2.removeWidget(widget)
+        widget.deleteLater()
 
 
     # Main functions for serial controls 
@@ -273,6 +316,192 @@ class MainWindow(QMainWindow):
     def stop_thread(self):
         self.beginReadSerial = False
 
+    # def openUserProfile(self):
+    #     profile = QFileDialog.getOpenFileName(self, "Open User Config", "", self.customProfileType)
+    #     if profile[0]:
+    #         with open(profile[0], 'r') as file:
+    #             rows = []
+    #             csvreader = csv.reader(file)
+    #             for row in csvreader:
+    #                 rows.append(row)
+                
+    #             # get the GPIO pins
+    #             for index in range(1, len(rows[0])):
+    #                 print(rows[0][index])
+                
+    #             # Get the macro names
+    #             for index in range(1, len(rows)):
+    #                 print(rows[index][0])
+                
+    #             # get the macrro values
+    #             for rowindex in range(1, len(rows)):
+    #                 for columnIndex in range(1, len(rows[0])):
+    #                     print(rows[rowindex][columnIndex])
+
+                                             
+    #         file.close()
+    def loadUserConfig(self):
+        profile = QFileDialog.getOpenFileName(self, "Open User Config", "", self.customProfileType)
+        if profile[0]:
+            while(len(self.macros) > 0):
+                print("deleteing macro %s" %self.macros[-1]._name)
+                self.macros[-1].deleteSelf()
+            with open(profile[0], 'r') as file:
+                rows = []
+                csvreader = csv.reader(file)
+                for row in csvreader:
+                    rows.append(row)
+                
+                current_dict = {}
+                name = ""
+                firstRowFlag = 1
+                pins = []
+
+                for row in rows:
+                    # / will be used as the seperator between the macro definitions
+                    if row[0] == "/":
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = name,
+                            dropdownval=current_dict,
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"]
+                        )
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        self.macros.append(macro_widget)
+                        current_dict = {}
+                        firstRowFlag = 1
+                        pins.clear()
+
+
+                    # # will be used to indicate the end of hte macros
+                    elif row[0] == "#":
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = name,
+                            dropdownval=current_dict,
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"]
+                        )
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        self.macros.append(macro_widget)
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = "",
+                            dropdownval={},
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"],
+                            last_item=True
+                        )
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        macro_widget.addMacroClicked.connect(self.handleAddMacro)
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.macros.append(macro_widget)
+                        current_dict = {}
+                        pins.clear()
+                    else:
+                        if(firstRowFlag):
+                            for i in range(1, len(row)):
+                                if(row[i] == ''):
+                                    break
+                                pins.append(int(row[i]))
+                            name = row[0]
+                            firstRowFlag = 0
+                        else:
+                            values = []
+                            for i in range(1, len(row)):
+                                if(row[i]==''):
+                                    break
+                                values.append([(pins[i-1]), int(row[i])])
+                            current_dict[row[0]] = values       
+            file.close()
+
+    def saveUserConfig(self):
+        profile = QFileDialog.getSaveFileName(self, "Save User Config", "", self.customProfileType)
+        if profile[0]:
+            with open(profile[0], 'w', newline='')as file:
+                rows = []
+                for index, macro in enumerate(self.macros):
+                    row = []
+                    if(index == 0):
+                        # first element of the first row is the name of the macro
+                        row.append(macro._name)
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(values[0])
+                        rows.append(row)
+
+                        for macroname in macro._dropDownVal.keys():
+                            row = []
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+                    elif(index == len(self.macros)-2):
+                        row.append("/")
+                        rows.append(row)
+
+                        # first element of the first row is the name of the macro
+                        row = []
+                        row.append(macro._name)
+
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(values[0])
+                        rows.append(row)
+
+
+                        for macroname in macro._dropDownVal.keys():
+                            row=[]
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+
+                        row = []
+                        row.append("#")
+                        rows.append(row)
+                    elif(index < len(self.macros)-1):
+                        row.append("/")
+                        rows.append(row)
+
+                        # first element of the first row is the name of the macro
+                        row = []
+                        row.append(macro._name)
+
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(values[0])
+                        rows.append(row)
+
+                        for macroname in macro._dropDownVal.keys():
+                            row = []
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+
+                # Create a CSV writer object
+                writer = csv.writer(file)
+                for row in rows:
+                    writer.writerow(row)
+                rows.clear()
+            file.close()
+
     # LEFT MENU BTN IS CLICKED
     # Run function when btn is clicked
     # Check funtion by object name / btn_id
@@ -301,30 +530,24 @@ class MainWindow(QMainWindow):
             MainFunctions.set_page(self, self.ui.load_pages.page_1)
 
         # WIDGETS BTN
-        if btn.objectName() == "btn_widgets":
+        if btn.objectName() == "btn_open_file":
             # Select Menu
             # self.ui.left_menu.select_only_one(btn.objectName())
 
             # Load Page 2
             # MainFunctions.set_page(self, self.ui.load_pages.page_2)
 
-            self.saveFile()
-
+            # self.saveFile()
+            self.loadUserConfig()
+            
         # LOAD USER PAGE
-        if btn.objectName() == "btn_add_user":
+        if btn.objectName() == "btn_save":
             # Select Menu
             # self.ui.left_menu.select_only_one(btn.objectName())
 
             # Load Page 3 
             # MainFunctions.set_page(self, self.ui.load_pages.page_3)
-            self.saveAs()
-
-        if btn.objectName() == "btn_new_file":
-            # Select Menu
-
-            # Load Page 3 
-            # MainFunctions.set_page(self, self.ui.load_pages.page_3)
-            self.openFile()
+            self.saveUserConfig()
 
         # BOTTOM INFORMATION
         if btn.objectName() == "btn_info":

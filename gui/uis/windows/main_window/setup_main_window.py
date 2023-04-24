@@ -68,42 +68,18 @@ class SetupMainWindow:
             "is_active" : True
         },
         {
-            "btn_icon" : "icon_widgets.svg",
-            "btn_id" : "btn_widgets",
-            "btn_text" : "Show Custom Widgets",
-            "btn_tooltip" : "Show custom widgets",
-            "show_top" : True,
-            "is_active" : False
-        },
-        {
-            "btn_icon" : "icon_add_user.svg",
-            "btn_id" : "btn_add_user",
-            "btn_text" : "Add Users",
-            "btn_tooltip" : "Add users",
-            "show_top" : True,
-            "is_active" : False
-        },
-        {
-            "btn_icon" : "icon_file.svg",
-            "btn_id" : "btn_new_file",
-            "btn_text" : "New File",
-            "btn_tooltip" : "Create new file",
-            "show_top" : True,
-            "is_active" : False
-        },
-        {
             "btn_icon" : "icon_folder_open.svg",
             "btn_id" : "btn_open_file",
-            "btn_text" : "Open File",
-            "btn_tooltip" : "Open file",
+            "btn_text" : "Open CSV Config File",
+            "btn_tooltip" : "Load Config",
             "show_top" : True,
             "is_active" : False
         },
         {
             "btn_icon" : "icon_save.svg",
             "btn_id" : "btn_save",
-            "btn_text" : "Save File",
-            "btn_tooltip" : "Save file",
+            "btn_text" : "Save as CSV Config File",
+            "btn_tooltip" : "Save Config",
             "show_top" : True,
             "is_active" : False
         },
@@ -315,15 +291,6 @@ class SetupMainWindow:
         
         self.test_widget.buttonStatesChanged.connect(handleStateChange)
 
-        # Add macro widget
-
-
-        self.add_macro_widget = PyGpioMacro(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
 
         # Lookup tables 
         attenuationDictRF = {}
@@ -445,7 +412,8 @@ class SetupMainWindow:
             name = "Path Selection",
             dropdownval=pathSelectionDict,
             width = 600,
-            colour = self.themes["app_color"]["dark_three"]
+            colour = self.themes["app_color"]["dark_three"],
+            last_item= True
         )
 
         self.add_macro_widget_10 = PyGpioMacro2(
@@ -840,7 +808,6 @@ class SetupMainWindow:
         self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_7)
         self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_8)
         self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_9)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget)
         # RIGHT COLUMN
         # ///////////////////////////////////////////////////////////////
 

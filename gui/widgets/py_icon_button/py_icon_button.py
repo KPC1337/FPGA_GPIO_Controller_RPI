@@ -250,7 +250,7 @@ class PyIconButton(QPushButton):
 
         pos_x = (pos.x() - (self._tooltip.width() // 2)) + (self.width() // 2)
         if(self._tooltip_bottom):
-            pos_y = pos.y() + self._top_margin
+            pos_y = pos.y() + self._top_margin-15
         else:
             pos_y = pos.y() - self._top_margin
 
