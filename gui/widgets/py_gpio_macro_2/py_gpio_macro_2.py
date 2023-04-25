@@ -306,16 +306,55 @@ class PyGpioMacro2(QWidget):
         return self._dropDownVal
 
     def saveMacroCSV(self):
-        profile = QFileDialog.getSaveFileName(self, "Save User Config", "", self.customProfileType)
+        profile = QFileDialog.getSaveFileName(self, "Save User Config", "profiles/Single_Configs/", self.customProfileType)
         if profile[0]:
             with open(profile[0], 'w', newline='')as file:
+                
+                rows = []
+                row = []
+                pinNameMap = {}
+
+                row.append("Top_Pins")
+                rows.append(row)
+                row = []
+
+                for index in range(self._parent.gpio_edit_table.rowCount()):
+                    if(index == 19):
+                        row.append(self._parent.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self._parent.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    elif(index == 39):
+                        row.append(self._parent.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self._parent.gpio_edit_table.item(index, 0).text()
+                        row = []
+                        row.append("Bottom_Pins")
+                        rows.append(row)
+                        row = []
+                    elif(index == 59):
+                        row.append(self._parent.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self._parent.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    elif(index == 79):
+                        row.append(self._parent.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self._parent.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    else:
+                        row.append(self._parent.gpio_edit_table.item(index, 0).text())
+                        pinNameMap[index] = self._parent.gpio_edit_table.item(index, 0).text()
+                
                 firstRow = []
                 # first element of the first row should be the name of the macro
                 firstRow.append(self.macro_name.text())
                 # the rest of the elements in the first row should be the pins
                 for value in self._dropDownVal[self.dropdown.currentText()]:
-                    firstRow.append(value[0])
-                rows = []
+                    firstRow.append(pinNameMap[value[0]])
+
+                rows.append(firstRow)
+
                 for macroname in self._dropDownVal.keys():
                     tempRow = []
                     tempRow.append(macroname)
@@ -325,7 +364,7 @@ class PyGpioMacro2(QWidget):
 
                 # Create a CSV writer object
                 writer = csv.writer(file)
-                writer.writerow(firstRow)
+
 
                 for row in rows:
                     writer.writerow(row)
@@ -353,8 +392,23 @@ class PyGpioMacro2(QWidget):
             self.btn_delete_macro.setParent(None)
 
         if(self._last_item): 
+            self.button_add_macro._tooltip.deleteLater()
             self.button_add_macro.deleteLater()
+            self.backgroundWidget.deleteLater()
+            self.main_layout.deleteLater()
+            self.contentLayout.deleteLater()
+            
         else:
+            self.backgroundWidget.deleteLater()
+            self.main_layout.deleteLater()
+            self.contentLayout.deleteLater()
+
+            self.button_add_macro._tooltip.deleteLater()
+            self.btn_save_macro_csv._tooltip.deleteLater()
+            self.btn_change_macro._tooltip.deleteLater()
+            self.btn_load_macro._tooltip.deleteLater()
+            self.btn_save_macro._tooltip.deleteLater()
+
             self.button_add_macro.deleteLater()
             self.btn_save_macro_csv.deleteLater()
             self.btn_change_macro.deleteLater()
@@ -363,11 +417,13 @@ class PyGpioMacro2(QWidget):
             self.dropdown.deleteLater()
             self.macro_name.deleteLater()
             self.btn_delete_macro.deleteLater()
+            self.btn_delete_macro._tooltip.deleteLater()
         self.deleteMacroClicked.emit(self)
+        self.deleteLater()
 
 
     def openUserProfile(self):
-        profile = QFileDialog.getOpenFileName(self, "Open User Config", "", self.customProfileType)
+        profile = QFileDialog.getOpenFileName(self, "Open User Config", "profiles/Single_Configs/", self.customProfileType)
         newDict = {}
         if profile[0]:
             with open(profile[0], 'r', encoding='utf-8-sig') as file:
@@ -375,30 +431,67 @@ class PyGpioMacro2(QWidget):
                 csvreader = csv.reader(file)
                 for row in csvreader:
                     rows.append(row)
+
                 
+                pinMap = {}
+                pinNames = []
+                index = 0
+                for pin in rows[1]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[2]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[4]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[5]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+
                 
                 # get the Macro name
-                self.macro_name.setText(rows[0][0])
+                self.macro_name.setText(rows[6][0])
 
                 # get the pins
                 pins = []
-                for index in range(1, len(rows[0])):
-                    print(rows[0][index])
-                    pins.append(int(rows[0][index]))
+                for index in range(1, len(rows[6])):
+                    pins.append(int(pinMap[rows[6][index]]))
 
                 # Get the macro names
                 macro_names = []
-                for index in range(1, len(rows)):
+                for index in range(7, len(rows)):
                     print(rows[index][0])
                     macro_names.append(rows[index][0])
 
                 
                 # get the macrro values
-                for rowindex in range(1, len(rows)):
+                for rowindex in range(7, len(rows)):
                     valueList = []
-                    for columnIndex in range(1, len(rows[0])):
+                    for columnIndex in range(1, len(rows[6])):
                         valueList.append([pins[columnIndex-1],int(rows[rowindex][columnIndex])])
-                    newDict[macro_names[rowindex-1]] = valueList
+                    newDict[macro_names[rowindex-7]] = valueList
+                
+                # update the pin names
+                for index, name in enumerate(pinNames):
+                    self._parent.gpio_edit_table.item(index, 0).setText(str(name))
+                    self._parent.test_widget.buttons[index].set_tooltip_text(name)
             print(newDict)    
             print("user macro set")
             self.setDropDownVal(newDict)         

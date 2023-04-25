@@ -341,7 +341,7 @@ class MainWindow(QMainWindow):
                                              
     #         file.close()
     def loadUserConfig(self):
-        profile = QFileDialog.getOpenFileName(self, "Open User Config", "", self.customProfileType)
+        profile = QFileDialog.getOpenFileName(self, "Open User Config", "profiles/Full_Configs/", self.customProfileType)
         if profile[0]:
             while(len(self.macros) > 0):
                 print("deleteing macro %s" %self.macros[-1]._name)
@@ -351,13 +351,44 @@ class MainWindow(QMainWindow):
                 csvreader = csv.reader(file)
                 for row in csvreader:
                     rows.append(row)
-                
+                pinMap = {}
+                pinNames = []
+
+                index = 0
+                for pin in rows[1]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[2]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[4]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+
+                for pin in rows[5]:
+                    if(pin == ""):
+                        break
+                    pinMap[pin] = index
+                    pinNames.append(pin)
+                    index = index+1
+                    
                 current_dict = {}
                 name = ""
                 firstRowFlag = 1
                 pins = []
 
-                for row in rows:
+                for index,row in enumerate(rows):
                     # / will be used as the seperator between the macro definitions
                     if row[0] == "/":
 
@@ -413,12 +444,14 @@ class MainWindow(QMainWindow):
                         self.macros.append(macro_widget)
                         current_dict = {}
                         pins.clear()
-                    else:
+
+                        break
+                    elif(index>5):
                         if(firstRowFlag):
                             for i in range(1, len(row)):
                                 if(row[i] == ''):
                                     break
-                                pins.append(int(row[i]))
+                                pins.append((row[i]))
                             name = row[0]
                             firstRowFlag = 0
                         else:
@@ -426,15 +459,59 @@ class MainWindow(QMainWindow):
                             for i in range(1, len(row)):
                                 if(row[i]==''):
                                     break
-                                values.append([(pins[i-1]), int(row[i])])
-                            current_dict[row[0]] = values       
+                                values.append([(int(pinMap[pins[i-1]])), int(row[i])])
+                            current_dict[row[0]] = values      
+
+                for index, name in enumerate(pinNames):
+                    item = QTableWidgetItem()
+                    item.setText(str(name))
+                    self.gpio_edit_table.setItem(index, 0, item)
+                    self.test_widget.buttons[index].set_tooltip_text(name)
+
             file.close()
+            
 
     def saveUserConfig(self):
-        profile = QFileDialog.getSaveFileName(self, "Save User Config", "", self.customProfileType)
+        profile = QFileDialog.getSaveFileName(self, "Save User Config", "profiles/Full_Configs/", self.customProfileType)
         if profile[0]:
             with open(profile[0], 'w', newline='')as file:
-                rows = []
+                rows = []               
+                row = []
+
+                row.append("Top_Pins")
+                rows.append(row)
+                row = []
+
+                pinNameMap = {}
+
+                for index in range(self.gpio_edit_table.rowCount()):
+                    if(index == 19):
+                        row.append(self.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    elif(index == 39):
+                        row.append(self.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+                        row = []
+                        row.append("Bottom_Pins")
+                        rows.append(row)
+                        row = []
+                    elif(index == 59):
+                        row.append(self.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    elif(index == 79):
+                        row.append(self.gpio_edit_table.item(index, 0).text())
+                        rows.append(row)
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+                        row = []
+                    else:
+                        row.append(self.gpio_edit_table.item(index, 0).text())
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+
                 for index, macro in enumerate(self.macros):
                     row = []
                     if(index == 0):
@@ -442,7 +519,7 @@ class MainWindow(QMainWindow):
                         row.append(macro._name)
                         # Rest of the elements in the row is the pin names
                         for values in macro._dropDownVal[macro.dropdown.currentText()]:
-                            row.append(values[0])
+                            row.append(pinNameMap[values[0]])
                         rows.append(row)
 
                         for macroname in macro._dropDownVal.keys():
@@ -461,7 +538,7 @@ class MainWindow(QMainWindow):
 
                         # Rest of the elements in the row is the pin names
                         for values in macro._dropDownVal[macro.dropdown.currentText()]:
-                            row.append(values[0])
+                            row.append(pinNameMap[values[0]])
                         rows.append(row)
 
 
@@ -485,7 +562,7 @@ class MainWindow(QMainWindow):
 
                         # Rest of the elements in the row is the pin names
                         for values in macro._dropDownVal[macro.dropdown.currentText()]:
-                            row.append(values[0])
+                            row.append(pinNameMap[values[0]])
                         rows.append(row)
 
                         for macroname in macro._dropDownVal.keys():
@@ -494,7 +571,7 @@ class MainWindow(QMainWindow):
                             for value in macro._dropDownVal[macroname]:
                                 row.append(value[1])
                             rows.append(row)
-
+                
                 # Create a CSV writer object
                 writer = csv.writer(file)
                 for row in rows:
@@ -552,6 +629,7 @@ class MainWindow(QMainWindow):
         # BOTTOM INFORMATION
         if btn.objectName() == "btn_info":
             # CHECK IF LEFT COLUMN IS VISIBLE
+            print(len(QApplication.allWidgets()))
             if not MainFunctions.left_column_is_visible(self):
                 self.ui.left_menu.select_only_one_tab(btn.objectName())
 

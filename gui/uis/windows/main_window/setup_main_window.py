@@ -446,7 +446,7 @@ class SetupMainWindow:
             icon_color_pressed = self.themes["app_color"]["white"],
             icon_color_active = self.themes["app_color"]["icon_active"],
             bg_color = self.themes["app_color"]["context_color"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_hover = self.themes["app_color"]["context_hover"],
             bg_color_pressed = self.themes["app_color"]["green"],
         )
         
