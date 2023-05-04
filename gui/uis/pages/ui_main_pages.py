@@ -8,8 +8,9 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from qt_core import *
 
+from qt_core import *
+from gui.widgets import PyScrollArea
 class Ui_MainPages(object):
     def setupUi(self, MainPages):
         if not MainPages.objectName():
@@ -28,11 +29,23 @@ class Ui_MainPages(object):
         self.page_1_layout.setSpacing(5)
         self.page_1_layout.setObjectName(u"page_1_layout")
         self.page_1_layout.setContentsMargins(5, 5, 5, 5)
-        self.scrollArea = QScrollArea(self.page_1)
+
+        self.scrollArea = PyScrollArea(
+            parent = self.page_1,
+            radius = 8,
+            color = "#00ff7f",
+            bg_color = "transparent",
+            scroll_bar_bg_color = "#21252d",
+            scroll_bar_btn_color = "#333333",
+            context_color = "#00ABE8",
+            spacing = 10
+        )
+
+
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setStyleSheet(u"background: transparent;")
+        #self.scrollArea.setStyleSheet(u"background: transparent;")
         self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()

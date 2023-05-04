@@ -425,12 +425,6 @@ class SetupMainWindow:
             colour = self.themes["app_color"]["dark_three"]
         )
 
-        # Serial controls label
-        self.label_serial_controls = QLabel(self)
-        self.label_serial_controls.setFrameStyle(QFrame.NoFrame | QFrame.Sunken)
-        self.label_serial_controls.setText(" Serial Controls")
-        self.label_serial_controls.setAlignment(Qt.AlignBottom | Qt.AlignLeft)
-        self.label_serial_controls.setMaximumSize(500, 40)
         # # Send serial button
         self.btn_send = PyIconButton(
             icon_path = Functions.set_svg_icon("icon_send.svg"),
@@ -450,87 +444,11 @@ class SetupMainWindow:
             bg_color_pressed = self.themes["app_color"]["green"],
         )
         
-        # self.btn_send = PyPushButton(
-        #     text = "Button Without Icon",
-        #     radius  =8,
-        #     color = self.themes["app_color"]["text_foreground"],
-        #     bg_color = self.themes["app_color"]["dark_one"],
-        #     bg_color_hover = self.themes["app_color"]["dark_three"],
-        #     bg_color_pressed = self.themes["app_color"]["dark_four"]
-        # )
-        # self.btn_send.setMinimumHeight(40)
-        # self.btn_send.setMinimumWidth(40)
 
-        #self.btn_send =  QPushButton("Click Me", self)
-
-        # Refresh com ports button
-        self.btn_refresh_com = PyIconButton(
-            icon_path = Functions.set_svg_icon("icon_refresh.svg"),
-            parent = self,
-            app_parent = self.ui.central_widget,
-            tooltip_text = "Refresh COM ports",
-            width = 40,
-            height = 30,
-            radius = 8,
-            dark_one = self.themes["app_color"]["dark_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["white"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["green"],
-        )
-
-        # connnect to port button
-        self.btn_connect = PyIconButton(
-            icon_path = Functions.set_svg_icon("icon_connect.svg"),
-            parent = self,
-            app_parent = self.ui.central_widget,
-            tooltip_text = "Connect serial device",
-            width = 40,
-            height = 30,
-            radius = 8,
-            dark_one = self.themes["app_color"]["dark_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["white"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["green"],
-        )
-        self.btn_connect.setCheckable(True)
 
         self.btn_send.setMaximumSize(100, 30)
-        self.btn_refresh_com.setMaximumSize(100, 30)
-        self.btn_connect.setMaximumSize(100, 30)
 
-        # Serial controls label
-        self.label_com_ports = QLabel(self)
-        self.label_com_ports.setFrameStyle(QFrame.NoFrame | QFrame.Sunken)
-        self.label_com_ports.setText(" COM Ports")
-        self.label_com_ports.setAlignment(Qt.AlignBottom | Qt.AlignLeft)
-        self.label_com_ports.setMaximumWidth(500)
 
-        # com port selection dropdown
-        self.dropdown_com_sel = PyDropDown(
-            bg_color = "#1B1D23",
-            radius = 8,
-            border_size = 2,
-            border_color = "#21252B",
-            hover_color = "#404758",
-            item_text_color = self.themes["app_color"]["text_active"],
-            item_background_color = "#21252B",
-            selection_background_colour = "#272C36",
-            border_right_color = self.themes["app_color"]["context_color"],
-            width = 25
-        )
-
-        self.dropdown_com_sel.setMaximumSize(150, 30)
-
-        self.btn_refresh_com.clicked.connect(self.update_coms)
-        self.btn_connect.clicked.connect(lambda: self.serial_connect(self.btn_connect))
         self.btn_send.clicked.connect(self.serial_send)
 
         # PAGE 2
@@ -789,13 +707,6 @@ class SetupMainWindow:
         self.ui.load_pages.row_3_layout.addWidget(self.toggle_button)
         self.ui.load_pages.row_4_layout.addWidget(self.line_edit)
         self.ui.load_pages.row_5_layout.addWidget(self.table_widget)
-
-         # load serial controls
-        self.ui.load_pages.ser_cont_label_layout.addWidget(self.label_serial_controls)
-        self.ui.load_pages.serial_controls_layout.addWidget(self.btn_refresh_com)
-        self.ui.load_pages.serial_controls_layout.addWidget(self.btn_connect)
-        self.ui.load_pages.dropdown_label_layout.addWidget(self.label_com_ports)
-        self.ui.load_pages.com_ports_layout.addWidget(self.dropdown_com_sel)
 
         # load FPGA GPIO selector widget
         self.ui.load_pages.verticalLayout_2.addWidget(self.test_widget)

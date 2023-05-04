@@ -135,11 +135,11 @@ class MainWindow(QMainWindow):
         self.macros.append(self.add_macro_widget_9)
 
 
-        self.update_coms()
 
         self.ui.statusBar.set_right_text_color(self.themes["app_color"]["red"])
         self.ui.statusBar.set_left_text_color(self.themes["app_color"]["text_active"])
         print(self.test_widget.getSerialData(self.ui.statusBar))
+        self.serial_connect()
         # SHOW MAIN WINDOW
         # ///////////////////////////////////////////////////////////////
         self.show()
@@ -208,42 +208,32 @@ class MainWindow(QMainWindow):
 
     # Main functions for serial controls 
     # ///////////////////////////////////////////////////////////////
-    def update_coms(self):
-        ports = serial.tools.list_ports.comports()
-        coms = [com[0] for com in ports]
-        coms.insert(0, "-")
-        print(coms)
-        portDropDown = self.dropdown_com_sel
-        portDropDown.clear()
-        for ports in coms:
-            portDropDown.addItem(ports)
+    # def update_coms(self):
+    #     ports = serial.tools.list_ports.comports()
+    #     coms = [com[0] for com in ports]
+    #     coms.insert(0, "-")
+    #     print(coms)
+    #     portDropDown = self.dropdown_com_sel
+    #     portDropDown.clear()
+    #     for ports in coms:
+    #         portDropDown.addItem(ports)
 
-    def serial_connect(self, button):
-        if self.btn_connect.isChecked() == False:
-            port = self.dropdown_com_sel.currentText()
-            print(port)
-            if port != '-':
-                try:
-                    self.ser = serial.Serial(port, 115200, timeout=0)
-                    self.ui.statusBar.set_right_text("Connected")
-                    self.btn_connect.set_tooltip_text("Disconnect Serial device")
-                    self.beginReadSerial = True
-                    button.setChecked(1)     
-                    t1 = threading.Thread(target=self.read_serial)
-                    t1.deamon = True
-                    t1.start()
-                    self.btn_send.setEnabled(True)
-                    self.ui.statusBar.set_right_text_color(self.themes["app_color"]["green"])
-                except:
-                    print("Couldn't connect")
-        else:
-            self.ser.close()
-            self.ui.statusBar.set_right_text("Disconnected")
-            self.ui.statusBar.set_right_text_color(self.themes["app_color"]["red"])
-            self.beginReadSerial = False
-            self.btn_connect.set_tooltip_text("Connect Serial device")
-            button.setChecked(0)  
-            self.btn_send.setEnabled(False)
+    def serial_connect(self):
+        port = "/dev/ttys0"
+        print(port)
+        if port != '-':
+            try:
+                self.ser = serial.Serial(port, 115200, timeout=0)
+                self.ui.statusBar.set_right_text("Connected")
+                self.beginReadSerial = True
+                t1 = threading.Thread(target=self.read_serial)
+                t1.deamon = True
+                t1.start()
+                self.btn_send.setEnabled(True)
+                self.ui.statusBar.set_right_text_color(self.themes["app_color"]["green"])
+            except:
+                print("Couldn't connect")
+
 
     # Function (Thread 2) to Manage Reading the UART data from MCU
     def read_serial(self):
