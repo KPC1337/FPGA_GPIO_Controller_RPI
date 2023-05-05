@@ -3,3 +3,4 @@ profiles/Full_Configs/
 __pycache__/
 
 
+*.pyc

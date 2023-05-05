@@ -79,6 +79,40 @@ class PyTableWidget(QTableWidget):
             scroll_bar_btn_color,
             context_color
         )
+        self._start_pos = QPoint()
+        self._is_dragging = False
+
+    def mouseDoubleClickEvent(self, event):
+        item = self.itemAt(event.pos())
+        if item:
+            self.setCurrentItem(item)
+        event.accept()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._start_pos = event.pos()
+            self._is_dragging = True      
+            self.setCursor(Qt.ClosedHandCursor) 
+            event.accept()
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._is_dragging:
+            delta = self._start_pos - event.pos()
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + (delta.y()))
+            self._start_pos = event.pos()
+            event.accept()
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self._is_dragging:
+            self._is_dragging = False
+            self.setCursor(Qt.ArrowCursor)
+            event.accept()
+        else:
+            super().mouseReleaseEvent(event)
 
     # SET STYLESHEET
     def set_stylesheet(
