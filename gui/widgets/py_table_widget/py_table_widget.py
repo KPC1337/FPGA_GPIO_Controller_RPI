@@ -81,18 +81,17 @@ class PyTableWidget(QTableWidget):
         )
         self._start_pos = QPoint()
         self._is_dragging = False
+        self.verticalScrollBar().setMinimum(5000)
 
-    def mouseDoubleClickEvent(self, event):
-        item = self.itemAt(event.pos())
-        if item:
-            self.setCurrentItem(item)
-        event.accept()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self._start_pos = event.pos()
             self._is_dragging = True      
             self.setCursor(Qt.ClosedHandCursor) 
+            item = self.itemAt(event.pos())
+            if item:
+                self.setCurrentItem(item)
             event.accept()
         else:
             super().mousePressEvent(event)
@@ -100,7 +99,8 @@ class PyTableWidget(QTableWidget):
     def mouseMoveEvent(self, event):
         if self._is_dragging:
             delta = self._start_pos - event.pos()
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + (delta.y()))
+            new_value = max(-1, min(1, delta.y()))
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + new_value)
             self._start_pos = event.pos()
             event.accept()
         else:
