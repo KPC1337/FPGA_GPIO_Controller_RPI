@@ -219,7 +219,7 @@ class MainWindow(QMainWindow):
     #         portDropDown.addItem(ports)
 
     def serial_connect(self):
-        port = "/dev/ttys0"
+        port = "/dev/ttyS0"
         print(port)
         if port != '-':
             try:
