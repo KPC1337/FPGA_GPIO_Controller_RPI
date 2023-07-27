@@ -81,3 +81,5 @@ from . py_gpio_macro import PyGpioMacro
 from . py_gpio_macro_2 import PyGpioMacro2
 
 from . py_scroll_area import PyScrollArea
+
+from . py_gpio_selector_2 import PyGpioSelector2

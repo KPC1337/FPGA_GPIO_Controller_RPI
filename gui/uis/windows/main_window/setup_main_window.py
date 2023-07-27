@@ -264,165 +264,36 @@ class SetupMainWindow:
             self.test_widget.getSerialData(self.ui.statusBar)
         # PAGE 1 
         
-        self.test_widget = PyGpioSelector(
+        self.test_widget = PyGpioSelector2(
             parent = self,
             app_parent = self.ui.central_widget,
-            pictureWidth = 685,
-            pictureHeight = 326,
-            width = 550,
-            height = 60,
             radius = 3,
             color = self.themes["app_color"]["dark_three"], 
-            rows = 2, 
-            columns = 20, 
             sideBorders = 0, 
             topBorders = 0, 
             bottomBorders = 5, 
-            buttonHeight = 18,
-            buttonWidth = 18,
-            buttonRadius = 5,
+            buttonHeight = 22,
+            buttonWidth = 22,
+            buttonRadius = 10,
             buttonColour = self.themes["app_color"]["dark_one"],
             buttonColourPressed = self.themes["app_color"]["dark_three"],
             buttonColourHover = self.themes["app_color"]["context_color"],
             buttonColourActive = self.themes["app_color"]["green"],
-            buttonSpacing=14, 
-            vSpacing = 15
+            buttonSpacing=12
         )
         
         self.test_widget.buttonStatesChanged.connect(handleStateChange)
 
 
-        # Lookup tables 
-        attenuationDictRF = {}
-        attenuationDictIF = {}
 
-        RFBITEselDict = {"RF"   : [[15, 1]],
-                         "BITE" : [[15, 0]]
-                         }
-        
-        SFB1selDict = {"2 - 3.5 GHz"    : [[6, 1], [7, 0], [8, 1], [9, 0]],
-                       "3 - 4.5 GHz"    : [[6, 0], [7, 1], [8, 0], [9, 0]],
-                       "4 - 6 GHz"      : [[6, 0], [7, 0], [8, 0], [9, 1]],
-                       "5.5 - 18 GHz"   : [[6, 1], [7, 1], [8, 1], [9, 1]]
-                       }
-        
-        inputSelection1 = {"0.5-2GHz / 6-17Ghz" : [[16, 1]],
-                           "2-18GHz"            : [[16, 0]]
-                        }
-        
-        inputSelection2 = {"0.5-6GHz"   : [[17, 0]],
-                           "5.5-18GHz"  : [[17, 1]]
-                        }
-        
-        SFB2selDict = {"5.5 - 8.5 GHz"  : [[10, 1], [11, 1], [12, 0], [13, 0], [18,1], [19, 0]],
-                       "8 - 11 GHz"     : [[10, 0], [11, 0], [12, 1], [13, 1], [18,0], [19, 0]],
-                       "10.5 - 13.5 GHz": [[10, 1], [11, 0], [12, 0], [13, 1], [18,0], [19, 0]],
-                       "13 - 16 GHz"    : [[10, 1], [11, 1], [12, 0], [13, 0], [18,0], [19, 1]],
-                       "15.5 - 18 GHz"  : [[10, 0], [11, 1], [12, 1], [13, 0], [18,0], [19, 0]],
-                       }
-        
-        pathSelectionDict = {"2-3GHz"   : [[26, 0]],
-                           "160MHz"  : [[26, 1]]
-                        }
-        
-        oneShotDict = {
-            "0.5 - 2GHz"        : [[0,1], [1,1], [2,1], [3,1], [4,1] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,0] ,[11,1] ,[12, 1] ,[13, 0] ,[15, 0] ,[16, 1] ,[17, 0] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "2 - 3.5GHz"        : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,0] ,[8,1] ,[9,0] ,[10,0] ,[11,1] ,[12, 1] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 0] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "2.5 - 3.5GHz"      : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,0] ,[8,1] ,[9,0] ,[10,1] ,[11,1] ,[12, 0] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 0] ,[18, 0] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "3 - 4.5GHz"        : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,0] ,[7,1] ,[8,0] ,[9,0] ,[10,1] ,[11,1] ,[12, 0] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 0] ,[18, 0] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "4 - 5GHz"          : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,0] ,[7,0] ,[8,0] ,[9,1] ,[10,1] ,[11,1] ,[12, 0] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 0] ,[18, 0] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "5 - 6GHz"          : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,0] ,[7,0] ,[8,0] ,[9,1] ,[10,1] ,[11,0] ,[12, 0] ,[13, 1] ,[15, 1] ,[16, 0] ,[17, 0] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "5.5 - 8.5GHz"      : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,1] ,[11,1] ,[12, 0] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 1] ,[18, 1] ,[19, 0] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "8 - 11GHz"         : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,0] ,[11,0] ,[12, 1] ,[13, 1] ,[15, 1] ,[16, 0] ,[17, 1] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "10.5 - 13.5GHz"    : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,1] ,[11,0] ,[12, 0] ,[13, 1] ,[15, 1] ,[16, 0] ,[17, 1] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "13 - 16GHz"        : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,1] ,[11,1] ,[12, 0] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 1] ,[18, 0] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]],
-            "15.5 - 18GHz"      : [[0,0], [1,0], [2,0], [3,0], [4,0] ,[6,1] ,[7,1] ,[8,1] ,[9,1] ,[10,0] ,[11,1] ,[12, 1] ,[13, 0] ,[15, 1] ,[16, 0] ,[17, 1] ,[18, 1] ,[19, 1] ,[20, 1] ,[21, 1] ,[22, 1] ,[23, 1] ,[24, 1] ,[26, 1], [27, 1]]
-        }
-
-        for attenuation in range(32):
-            attenuationDictRF[str(attenuation) + "dB"] = [[0,(attenuation & 1)], [1,((attenuation>>1) & 1)], [2,((attenuation>>2) & 1)], [3,((attenuation>>3) & 1)], [4, ((attenuation>>4) & 1)]]
-            attenuationDictIF[str(attenuation) + "dB"] = [[24,1^(attenuation & 1)], [23,1^((attenuation>>1) & 1)], [22,1^((attenuation>>2) & 1)], [21,1^((attenuation>>3) & 1)], [20, 1^((attenuation>>4) & 1)]]
-
-        self.add_macro_widget_2 = PyGpioMacro2(
+        self.add_macro_widget = PyGpioMacro2(
             parent = self,
             app_parent = self.ui.central_widget,
-            name = "RF Attenuation",
-            dropdownval=attenuationDictRF,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_3 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "IF Attenuation",
-            dropdownval=attenuationDictIF,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_4 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "SFB 1 Selection",
-            dropdownval=SFB1selDict,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_5 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "SFB 2 Selection",
-            dropdownval=SFB2selDict,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_6 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "RF path",
-            dropdownval=RFBITEselDict,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_7 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "Input Selection 1",
-            dropdownval=inputSelection1,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_8 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "Input Selection 2",
-            dropdownval=inputSelection2,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
-        )
-
-        self.add_macro_widget_9 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "Path Selection",
-            dropdownval=pathSelectionDict,
+            name = "",
+            dropdownval={},
             width = 600,
             colour = self.themes["app_color"]["dark_three"],
             last_item= True
-        )
-
-        self.add_macro_widget_10 = PyGpioMacro2(
-            parent = self,
-            app_parent = self.ui.central_widget,
-            name = "General Purpose",
-            dropdownval=oneShotDict,
-            width = 600,
-            colour = self.themes["app_color"]["dark_three"]
         )
 
         # # Send serial button
@@ -451,274 +322,10 @@ class SetupMainWindow:
 
         self.btn_send.clicked.connect(self.serial_send)
 
-        # PAGE 2
-        # CIRCULAR PROGRESS 1
-        self.circular_progress_1 = PyCircularProgress(
-            value = 80,
-            progress_color = self.themes["app_color"]["context_color"],
-            text_color = self.themes["app_color"]["text_title"],
-            font_size = 14,
-            bg_color = self.themes["app_color"]["dark_four"]
-        )
-        self.circular_progress_1.setFixedSize(200,200)
-
-        # CIRCULAR PROGRESS 2
-        self.circular_progress_2 = PyCircularProgress(
-            value = 45,
-            progress_width = 4,
-            progress_color = self.themes["app_color"]["context_color"],
-            text_color = self.themes["app_color"]["context_color"],
-            font_size = 14,
-            bg_color = self.themes["app_color"]["bg_three"]
-        )
-        self.circular_progress_2.setFixedSize(160,160)
-
-        # CIRCULAR PROGRESS 3
-        self.circular_progress_3 = PyCircularProgress(
-            value = 75,
-            progress_width = 2,
-            progress_color = self.themes["app_color"]["pink"],
-            text_color = self.themes["app_color"]["white"],
-            font_size = 14,
-            bg_color = self.themes["app_color"]["bg_three"]
-        )
-        self.circular_progress_3.setFixedSize(140,140)
-
-        # PY SLIDER 1
-        self.vertical_slider_1 = PySlider(
-            margin=8,
-            bg_size=10,
-            bg_radius=5,
-            handle_margin=-3,
-            handle_size=16,
-            handle_radius=8,
-            bg_color = self.themes["app_color"]["dark_three"],
-            bg_color_hover = self.themes["app_color"]["dark_four"],
-            handle_color = self.themes["app_color"]["context_color"],
-            handle_color_hover = self.themes["app_color"]["context_hover"],
-            handle_color_pressed = self.themes["app_color"]["context_pressed"]
-        )
-        self.vertical_slider_1.setMinimumHeight(100)
-
-        # PY SLIDER 2
-        self.vertical_slider_2 = PySlider(
-            bg_color = self.themes["app_color"]["dark_three"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            handle_color = self.themes["app_color"]["context_color"],
-            handle_color_hover = self.themes["app_color"]["context_hover"],
-            handle_color_pressed = self.themes["app_color"]["context_pressed"]
-        )
-        self.vertical_slider_2.setMinimumHeight(100)
-
-        # PY SLIDER 3
-        self.vertical_slider_3 = PySlider(
-            margin=8,
-            bg_size=10,
-            bg_radius=5,
-            handle_margin=-3,
-            handle_size=16,
-            handle_radius=8,
-            bg_color = self.themes["app_color"]["dark_three"],
-            bg_color_hover = self.themes["app_color"]["dark_four"],
-            handle_color = self.themes["app_color"]["context_color"],
-            handle_color_hover = self.themes["app_color"]["context_hover"],
-            handle_color_pressed = self.themes["app_color"]["context_pressed"]
-        )
-        self.vertical_slider_3.setOrientation(Qt.Horizontal)
-        self.vertical_slider_3.setMaximumWidth(200)
-
-        # PY SLIDER 4
-        self.vertical_slider_4 = PySlider(
-            bg_color = self.themes["app_color"]["dark_three"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            handle_color = self.themes["app_color"]["context_color"],
-            handle_color_hover = self.themes["app_color"]["context_hover"],
-            handle_color_pressed = self.themes["app_color"]["context_pressed"]
-        )
-        self.vertical_slider_4.setOrientation(Qt.Horizontal)
-        self.vertical_slider_4.setMaximumWidth(200)
-
-        # ICON BUTTON 1
-        self.icon_button_1 = PyIconButton(
-            icon_path = Functions.set_svg_icon("icon_heart.svg"),
-            parent = self,
-            app_parent = self.ui.central_widget,
-            tooltip_text = "Icon button - Heart",
-            width = 40,
-            height = 40,
-            radius = 20,
-            dark_one = self.themes["app_color"]["dark_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["icon_active"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["pink"]
-        )
-
-        # ICON BUTTON 2
-        self.icon_button_2 = PyIconButton(
-            icon_path = Functions.set_svg_icon("icon_add_user.svg"),
-            parent = self,
-            app_parent = self.ui.central_widget,
-            tooltip_text = "BTN with tooltip",
-            width = 40,
-            height = 40,
-            radius = 8,
-            dark_one = self.themes["app_color"]["dark_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["white"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["green"],
-        )
-
-        # ICON BUTTON 3
-        self.icon_button_3 = PyIconButton(
-            icon_path = Functions.set_svg_icon("icon_add_user.svg"),
-            parent = self,
-            app_parent = self.ui.central_widget,
-            tooltip_text = "BTN actived! (is_actived = True)",
-            width = 40,
-            height = 40,
-            radius = 8,
-            dark_one = self.themes["app_color"]["dark_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["white"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["context_color"],
-            is_active = True
-        )
-
-        # PUSH BUTTON 1
-        self.push_button_1 = PyPushButton(
-            text = "Button Without Icon",
-            radius  =8,
-            color = self.themes["app_color"]["text_foreground"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["dark_four"]
-        )
-        self.push_button_1.setMinimumHeight(40)
-
-        # PUSH BUTTON 2
-        self.push_button_2 = PyPushButton(
-            text = "Button With Icon",
-            radius = 8,
-            color = self.themes["app_color"]["text_foreground"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_hover = self.themes["app_color"]["dark_three"],
-            bg_color_pressed = self.themes["app_color"]["dark_four"]
-        )
-        self.icon_2 = QIcon(Functions.set_svg_icon("icon_settings.svg"))
-        self.push_button_2.setMinimumHeight(40)
-        self.push_button_2.setIcon(self.icon_2)
-
-        # PY LINE EDIT
-        self.line_edit = PyLineEdit(
-            text = "",
-            place_holder_text = "Place holder text",
-            radius = 8,
-            border_size = 2,
-            color = self.themes["app_color"]["text_foreground"],
-            selection_color = self.themes["app_color"]["white"],
-            bg_color = self.themes["app_color"]["dark_one"],
-            bg_color_active = self.themes["app_color"]["dark_three"],
-            context_color = self.themes["app_color"]["context_color"]
-        )
-        self.line_edit.setMinimumHeight(30)
-
-        # TOGGLE BUTTON
-        self.toggle_button = PyToggle(
-            width = 50,
-            bg_color = self.themes["app_color"]["dark_two"],
-            circle_color = self.themes["app_color"]["icon_color"],
-            active_color = self.themes["app_color"]["context_color"]
-        )
-
-        # TABLE WIDGETS
-        self.table_widget = PyTableWidget(
-            radius = 8,
-            color = self.themes["app_color"]["text_foreground"],
-            selection_color = self.themes["app_color"]["context_color"],
-            bg_color = self.themes["app_color"]["bg_two"],
-            header_horizontal_color = self.themes["app_color"]["dark_two"],
-            header_vertical_color = self.themes["app_color"]["bg_three"],
-            bottom_line_color = self.themes["app_color"]["bg_three"],
-            grid_line_color = self.themes["app_color"]["bg_one"],
-            scroll_bar_bg_color = self.themes["app_color"]["bg_one"],
-            scroll_bar_btn_color = self.themes["app_color"]["dark_four"],
-            context_color = self.themes["app_color"]["context_color"]
-        )
-        self.table_widget.setColumnCount(3)
-        self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_widget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.table_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        # Columns / Header
-        self.column_1 = QTableWidgetItem()
-        self.column_1.setTextAlignment(Qt.AlignCenter)
-        self.column_1.setText("NAME")
-
-        self.column_2 = QTableWidgetItem()
-        self.column_2.setTextAlignment(Qt.AlignCenter)
-        self.column_2.setText("NICK")
-
-        self.column_3 = QTableWidgetItem()
-        self.column_3.setTextAlignment(Qt.AlignCenter)
-        self.column_3.setText("PASS")
-
-        # Set column
-        self.table_widget.setHorizontalHeaderItem(0, self.column_1)
-        self.table_widget.setHorizontalHeaderItem(1, self.column_2)
-        self.table_widget.setHorizontalHeaderItem(2, self.column_3)
-
-        for x in range(10):
-            row_number = self.table_widget.rowCount()
-            self.table_widget.insertRow(row_number) # Insert row
-            self.table_widget.setItem(row_number, 0, QTableWidgetItem(str("Wanderson"))) # Add name
-            self.table_widget.setItem(row_number, 1, QTableWidgetItem(str("vfx_on_fire_" + str(x)))) # Add nick
-            self.pass_text = QTableWidgetItem()
-            self.pass_text.setTextAlignment(Qt.AlignCenter)
-            self.pass_text.setText("12345" + str(x))
-            self.table_widget.setItem(row_number, 2, self.pass_text) # Add pass
-            self.table_widget.setRowHeight(row_number, 22)
-
-
-        # ADD WIDGETS
-        self.ui.load_pages.row_1_layout.addWidget(self.circular_progress_1)
-        self.ui.load_pages.row_1_layout.addWidget(self.circular_progress_2)
-        self.ui.load_pages.row_1_layout.addWidget(self.circular_progress_3)
-        self.ui.load_pages.row_2_layout.addWidget(self.vertical_slider_1)
-        self.ui.load_pages.row_2_layout.addWidget(self.vertical_slider_2)
-        self.ui.load_pages.row_2_layout.addWidget(self.vertical_slider_3)
-        self.ui.load_pages.row_2_layout.addWidget(self.vertical_slider_4)
-        self.ui.load_pages.row_3_layout.addWidget(self.icon_button_1)
-        self.ui.load_pages.row_3_layout.addWidget(self.icon_button_2)
-        self.ui.load_pages.row_3_layout.addWidget(self.icon_button_3)
-        self.ui.load_pages.row_3_layout.addWidget(self.push_button_1)
-        self.ui.load_pages.row_3_layout.addWidget(self.push_button_2)
-        self.ui.load_pages.row_3_layout.addWidget(self.toggle_button)
-        self.ui.load_pages.row_4_layout.addWidget(self.line_edit)
-        self.ui.load_pages.row_5_layout.addWidget(self.table_widget)
 
         # load FPGA GPIO selector widget
         self.ui.load_pages.verticalLayout_2.addWidget(self.test_widget)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_10)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_2)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_3)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_4)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_5)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_6)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_7)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_8)
-        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget_9)
+        self.ui.load_pages.verticalLayout_2.addWidget(self.add_macro_widget)
         # RIGHT COLUMN
         # ///////////////////////////////////////////////////////////////
 
@@ -775,21 +382,22 @@ class SetupMainWindow:
         # Set column
         self.gpio_edit_table.setHorizontalHeaderItem(0, self.column_1)
 
-        button_names = ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", 
-                        "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
-                        "C1", "C2", "C3", "C4", "C5", "C6", "C7", 
-                        "D1", "D2"]
-        avoidIndex = [5,14,25,34,45,54,65,74]
-        temp_count = 0
-        for index, button in enumerate(self.test_widget.buttons):
-            if(index not in avoidIndex and index < 28):
-                button.set_tooltip_text(button_names[temp_count])
-                temp_count = temp_count+1
+        # button_names = ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", 
+        #                 "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
+        #                 "C1", "C2", "C3", "C4", "C5", "C6", "C7", 
+        #                 "D1", "D2"]
+        # avoidIndex = [5,14,25,34,45,54,65,74]
+        # temp_count = 0
+        # for index, button in enumerate(self.test_widget.buttons):
+        #     if(index not in avoidIndex and index < 28):
+        #         button.set_tooltip_text(button_names[temp_count])
+        #         temp_count = temp_count+1
 
         #Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-        for index, button in enumerate(self.test_widget.buttons):
-            if(index not in avoidIndex):
+        for button in self.test_widget.buttons:
+            avoid_text = ["GND", "VCC", "RST", "CLK", "UAR", "LED"]
+            if(button.get_tooltip_text()[:3] not in avoid_text):
                 row_number = self.gpio_edit_table.rowCount()
                 self.gpio_edit_table.insertRow(row_number) # Insert row
                 item = QTableWidgetItem()

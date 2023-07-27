@@ -1,46 +1,86 @@
-from PySide6.QtWidgets import QApplication, QFileDialog
-import csv
+import os
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import *
 
-# create a QApplication instance
-app = QApplication()
+class MyMainWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-# open a file dialog to select a CSV file
-file_dialog = QFileDialog()
-file_dialog.setNameFilter("CSV files (*.csv)")
-if file_dialog.exec_() == QFileDialog.Accepted:
-    selected_file = file_dialog.selectedFiles()[0]
-else:
-    # user cancelled the file dialog
-    selected_file = None
+        # Create a QVBoxLayout
+        layout = QVBoxLayout()
 
-# parse the CSV file and create the dictionaries
-if selected_file is not None:
-    dictionaries = []
-    current_dict = None
+        # Create a QWidget to hold the layout
+        widget = QWidget()
+        widget.setLayout(layout)
 
-    with open(selected_file, 'r') as csvfile:
-        reader = csv.reader(csvfile, delimiter=' ')
+        # Create a QScrollArea
+        scroll_area = QScrollArea()
 
-        for row in reader:
-            if row[0] == '-':  # found end of dictionary
-                current_dict = None
-            elif row[0] == '/':  # found separator line
-                current_dict = {}
-                dictionaries.append(current_dict)
-            elif current_dict is not None:  # data for current dictionary
-                key = row[0]
-                values = [[(row[i]), (row[i+1])] for i in range(1, len(row), 2)]
-                current_dict[key] = values
-            else:
-                # first dictionary not preceded by separator line
-                current_dict = {}
-                dictionaries.append(current_dict)
-                key = row[0]
-                values = [[(row[i]), (row[i+1])] for i in range(1, len(row), 2)]
-                current_dict[key] = values
+        # Create a QVBoxLayout for the scroll area
+        scroll_layout = QVBoxLayout()
 
-    # do something with the dictionaries
-    print(dictionaries)
+        # Create a QWidget to hold the scroll layout
+        scroll_widget = QWidget()
+        scroll_widget.setLayout(scroll_layout)
 
-# exit the application
-app.exit()
+        # Create a QGraphicsScene
+        scene = QGraphicsScene()
+
+        # Create a QGraphicsView and set the scene
+        view = QGraphicsView()
+        view.setScene(scene)
+        view.setDragMode(QGraphicsView.NoDrag)
+
+        # Create a QGraphicsPixmapItem to display the image
+        image_item = QGraphicsPixmapItem()
+
+        app_path = os.path.abspath(os.getcwd())
+        folder = "gui/images/images"
+        filename = "cyclone_2.png"
+        image_path = os.path.join(app_path, folder, filename)
+
+        # Load the image
+        image = QPixmap(image_path)
+        image_item.setPixmap(image)
+
+        # Add the image item to the scene
+        scene.addItem(image_item)
+
+        # Create a QPushButton
+        button = QPushButton("Button")
+
+        # Create a QGraphicsProxyWidget for the button
+        button_proxy = QGraphicsProxyWidget()
+        button_proxy.setWidget(button)
+        
+        # Calculate the position for the button
+        button_pos_x = image.width() / 2 - button.width() / 2
+        button_pos_y = image.height() / 2 - button.height() / 2
+        button_proxy.setPos(button_pos_x, button_pos_y)
+
+        # Add the button proxy to the scene
+        scene.addItem(button_proxy)
+
+        scroll_layout.addWidget(view)
+
+        # Add some labels to the scroll layout
+        for i in range(10):
+            label = QLabel(f"Label {i+1}")
+            scroll_layout.addWidget(label)
+
+        # Set the scroll widget as the widget for the scroll area
+        scroll_area.setWidget(scroll_widget)
+
+        # Add the QScrollArea to the layout
+        layout.addWidget(scroll_area)
+
+        # Set the QWidget as the central widget of the main window
+        self.setCentralWidget(widget)
+
+        self.show()
+
+if __name__ == '__main__':
+    app = QApplication([])
+    window = MyMainWindow()
+    app.exec()

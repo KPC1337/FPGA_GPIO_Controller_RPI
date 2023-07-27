@@ -28,7 +28,7 @@ class Ui_MainPages(object):
         self.page_1_layout = QVBoxLayout(self.page_1)
         self.page_1_layout.setSpacing(5)
         self.page_1_layout.setObjectName(u"page_1_layout")
-        self.page_1_layout.setContentsMargins(5, 5, 5, 5)
+        self.page_1_layout.setContentsMargins(0, 5, 0, 5)
 
         self.scrollArea = PyScrollArea(
             parent = self.page_1,
@@ -45,7 +45,7 @@ class Ui_MainPages(object):
         self.scrollArea.setObjectName(u"scrollArea")
         #self.scrollArea.setStyleSheet(u"background: transparent;")
         self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()

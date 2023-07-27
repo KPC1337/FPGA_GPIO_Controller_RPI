@@ -84,57 +84,15 @@ class MainWindow(QMainWindow):
         # self.add_macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
         # self.macros.append(self.add_macro_widget)
 
-        self.add_macro_widget_2.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_3.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_4.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_5.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_6.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_7.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_8.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_9.dropDownClicked.connect(self.handleMacroDropClick)
-        self.add_macro_widget_10.dropDownClicked.connect(self.handleMacroDropClick)
+        self.add_macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
 
-        self.add_macro_widget_2.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_3.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_4.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_5.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_6.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_7.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_8.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_9.saveMacroClicked.connect(self.handleSaveMacro)
-        self.add_macro_widget_10.saveMacroClicked.connect(self.handleSaveMacro)
+        self.add_macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
 
-        self.add_macro_widget_2.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_3.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_4.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_5.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_6.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_7.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_8.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_9.addMacroClicked.connect(self.handleAddMacro)
-        self.add_macro_widget_10.addMacroClicked.connect(self.handleAddMacro)
+        self.add_macro_widget.addMacroClicked.connect(self.handleAddMacro)
 
-        self.add_macro_widget_2.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_3.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_4.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_5.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_6.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_7.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_8.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_9.deleteMacroClicked.connect(self.handleDeleteMacro)
-        self.add_macro_widget_10.deleteMacroClicked.connect(self.handleDeleteMacro)
+        self.add_macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
 
-        self.macros.append(self.add_macro_widget_10)
-        self.macros.append(self.add_macro_widget_2)
-        self.macros.append(self.add_macro_widget_3)
-        self.macros.append(self.add_macro_widget_4)
-        self.macros.append(self.add_macro_widget_5)
-        self.macros.append(self.add_macro_widget_6)
-        self.macros.append(self.add_macro_widget_7)
-        self.macros.append(self.add_macro_widget_8)
-        self.macros.append(self.add_macro_widget_9)
-
-
+        self.macros.append(self.add_macro_widget)
 
         self.ui.statusBar.set_right_text_color(self.themes["app_color"]["red"])
         self.ui.statusBar.set_left_text_color(self.themes["app_color"]["text_active"])
@@ -330,6 +288,282 @@ class MainWindow(QMainWindow):
 
                                              
     #         file.close()
+
+    def loadUserConfigCyclone(self):
+        profile = QFileDialog.getOpenFileName(self, "Open User Config", "profiles/Full_Configs/", self.customProfileType)
+        if profile[0]:
+            top_pin_index = [0,0]
+            bottom_pin_index = [0,0]
+            left_pin_index = [0,0]
+            rigth_pin_index = [0,0]
+            index_flag = 0
+            while(len(self.macros) > 0):
+                print("deleteing macro %s" %self.macros[-1]._name)
+                self.macros[-1].deleteSelf()
+            with open(profile[0], 'r') as file:
+                rows = []
+                csvreader = csv.reader(file)
+                for index_row, row in enumerate(csvreader):
+                    rows.append(row)
+                    if index_flag == 0:
+                        for index_column, item in enumerate(row):
+                            if(item =="Top_Pins"):
+                                top_pin_index = [index_row, index_column]
+                            elif(item =="Left_Pins"):
+                                left_pin_index = [index_row, index_column]
+                            elif(item =="Right_Pins"):
+                                rigth_pin_index = [index_row, index_column]
+                            elif(item =="Bottom_Pins"):
+                                bottom_pin_index = [index_row, index_column]
+                                index_flag = 1
+
+                pinMap = {}
+                pinNames = []
+                index = 0
+
+                print(top_pin_index)
+                print(rigth_pin_index)
+                print(bottom_pin_index)
+                print(left_pin_index)
+
+                for csv_col_index in range(top_pin_index[1], top_pin_index[1]+14):
+                    for csv_row_index in range(top_pin_index[0]+1, top_pin_index[0]+3):
+                        item = rows[csv_row_index][csv_col_index]
+                        print(item, index)
+                        pinMap[item] = index
+                        pinNames.append(item)
+                        index = index + 1
+
+                for csv_row_index in range(rigth_pin_index[0]+1, rigth_pin_index[0]+15):
+                    for csv_col_index in range(rigth_pin_index[1], rigth_pin_index[1]+2):
+                        item = rows[csv_row_index][csv_col_index]
+                        pinMap[item] = index
+                        pinNames.append(item)
+                        index = index + 1
+                
+                for csv_col_index in range(bottom_pin_index[1], bottom_pin_index[1]+14):
+                    for csv_row_index in range(bottom_pin_index[0]+1, bottom_pin_index[0]+3):
+                        item = rows[csv_row_index][csv_col_index]
+                        pinMap[item] = index
+                        pinNames.append(item)
+                        index = index + 1
+
+                for csv_row_index in range(left_pin_index[0]+1, left_pin_index[0]+15):
+                    for csv_col_index in range(left_pin_index[1], left_pin_index[1]+2):
+                        item = rows[csv_row_index][csv_col_index]
+                        pinMap[item] = index
+                        pinNames.append(item)
+                        index = index + 1
+                
+                print(pinMap)
+                print(pinNames)
+
+                current_dict = {}
+                name = ""
+                firstRowFlag = 1
+                pins = []
+
+                for index,row in enumerate(rows):
+                    # / will be used as the seperator between the macro definitions
+                    if row[0] == "/":
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = name,
+                            dropdownval=current_dict,
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"]
+                        )
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        self.macros.append(macro_widget)
+                        current_dict = {}
+                        firstRowFlag = 1
+                        pins.clear()
+
+
+                    # # will be used to indicate the end of hte macros
+                    elif row[0] == "#":
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = name,
+                            dropdownval=current_dict,
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"]
+                        )
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        self.macros.append(macro_widget)
+
+                        macro_widget = PyGpioMacro2(
+                            parent = self,
+                            app_parent = self.ui.central_widget,
+                            name = "",
+                            dropdownval={},
+                            width = 600,
+                            colour = self.themes["app_color"]["dark_three"],
+                            last_item=True
+                        )
+                        self.ui.load_pages.verticalLayout_2.addWidget(macro_widget)
+                        macro_widget.addMacroClicked.connect(self.handleAddMacro)
+                        macro_widget.dropDownClicked.connect(self.handleMacroDropClick)
+                        macro_widget.deleteMacroClicked.connect(self.handleDeleteMacro)
+                        macro_widget.saveMacroClicked.connect(self.handleSaveMacro)
+                        self.macros.append(macro_widget)
+                        current_dict = {}
+                        pins.clear()
+
+                        break
+                    elif(index>=bottom_pin_index[0]+3):
+                        if(firstRowFlag):
+                            for i in range(1, len(row)):
+                                if(row[i] == ''):
+                                    break
+                                pins.append((row[i]))
+                            name = row[0]
+                            firstRowFlag = 0
+                        else:
+                            values = []
+                            for i in range(1, len(row)):
+                                if(row[i]==''):
+                                    break
+                                values.append([(int(pinMap[pins[i-1]])), int(row[i])])
+                            current_dict[row[0]] = values      
+
+                for index, name in enumerate(pinNames):
+                    avoid_text = ["GND", "VCC", "RST", "CLK", "UAR", "LED"]
+                    if(name[:3] not in avoid_text):
+                        item = QTableWidgetItem()
+                        item.setText(str(name))
+                        self.gpio_edit_table.setItem(index, 0, item)
+                        self.test_widget.buttons[index].set_tooltip_text(name)
+                    else:
+                        item = QTableWidgetItem()
+                        item.setText(str(name))
+                        item.setFlags(Qt.ItemIsEnabled)
+                        self.gpio_edit_table.setItem(index, 0, item)
+                        self.test_widget.buttons[index].set_tooltip_text(name)
+
+            file.close()
+
+
+    def saveUserConfigCyclone(self):
+        profile = QFileDialog.getSaveFileName(self, "Save User Config", "profiles/Full_Configs/", self.customProfileType)
+        if profile[0]:
+            with open(profile[0], 'w', newline='')as file:
+                rows = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]               
+                
+                for i in range(19):
+                    for j in range(18):
+                        rows[i].append("")
+
+
+                pinNameMap = {}
+
+                rows[0][2] = "Top_Pins"
+                for i in rows:
+                    print(i)
+                rows[2][0] = "Left_Pins"
+                rows[2][16] = "Right_Pins"
+                rows[16][2] = "Bottom_Pins"
+                
+
+                for index in range(self.gpio_edit_table.rowCount()):
+                    if(index<28):
+                        
+                        rows[(index%2)+1][(index//2)+2] =  self.gpio_edit_table.item(index, 0).text()
+                        print((index%2)+1, (index//2)+2, self.gpio_edit_table.item(index, 0).text(), rows[(index%2)+1])
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()     
+                    elif(index<56):
+                        print(((index//2)%14)+3, (index%2 + 16), self.gpio_edit_table.item(index, 0).text())
+                        rows[((index//2)%14)+3][(index%2)+16] =  self.gpio_edit_table.item(index, 0).text()
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()
+                    elif(index<84):
+                        print((index%2)+17, ((index//2)%14)+2, self.gpio_edit_table.item(index, 0).text())
+                        rows[(index%2)+17][((index//2)%28)+2] =  self.gpio_edit_table.item(index, 0).text()
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()  
+                    elif(index<112):
+                        print(((index//2)%14)+3, (index%2), self.gpio_edit_table.item(index, 0).text())
+                        rows[((index//2)%14)+3][(index%2)] =  self.gpio_edit_table.item(index, 0).text()
+                        pinNameMap[index] = self.gpio_edit_table.item(index, 0).text()           
+                for i in rows:
+                    print(i)
+                for index, macro in enumerate(self.macros):
+                    row = []
+                    if(index == 0):
+                        # first element of the first row is the name of the macro
+                        row.append(macro._name)
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(pinNameMap[values[0]])
+                        rows.append(row)
+
+                        for macroname in macro._dropDownVal.keys():
+                            row = []
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+                    elif(index == len(self.macros)-2):
+                        row.append("/")
+                        rows.append(row)
+
+                        # first element of the first row is the name of the macro
+                        row = []
+                        row.append(macro._name)
+
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(pinNameMap[values[0]])
+                        rows.append(row)
+
+
+                        for macroname in macro._dropDownVal.keys():
+                            row=[]
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+
+                        row = []
+                        row.append("#")
+                        rows.append(row)
+                    elif(index < len(self.macros)-1):
+                        row.append("/")
+                        rows.append(row)
+
+                        # first element of the first row is the name of the macro
+                        row = []
+                        row.append(macro._name)
+
+                        # Rest of the elements in the row is the pin names
+                        for values in macro._dropDownVal[macro.dropdown.currentText()]:
+                            row.append(pinNameMap[values[0]])
+                        rows.append(row)
+
+                        for macroname in macro._dropDownVal.keys():
+                            row = []
+                            row.append(macroname)
+                            for value in macro._dropDownVal[macroname]:
+                                row.append(value[1])
+                            rows.append(row)
+                
+                # Create a CSV writer object
+                writer = csv.writer(file)
+                for row in rows:
+                    writer.writerow(row)
+                rows.clear()
+            file.close()
+   
+
+
     def loadUserConfig(self):
         profile = QFileDialog.getOpenFileName(self, "Open User Config", "profiles/Full_Configs/", self.customProfileType)
         if profile[0]:
@@ -605,7 +839,7 @@ class MainWindow(QMainWindow):
             # MainFunctions.set_page(self, self.ui.load_pages.page_2)
 
             # self.saveFile()
-            self.loadUserConfig()
+            self.loadUserConfigCyclone()
             
         # LOAD USER PAGE
         if btn.objectName() == "btn_save":
@@ -614,7 +848,7 @@ class MainWindow(QMainWindow):
 
             # Load Page 3 
             # MainFunctions.set_page(self, self.ui.load_pages.page_3)
-            self.saveUserConfig()
+            self.saveUserConfigCyclone()
 
         # BOTTOM INFORMATION
         if btn.objectName() == "btn_info":
